@@ -3,10 +3,13 @@
 namespace DVE\CEXApiClient;
 
 use DVE\CEXApiClient\Definition\Request\BalanceRequest;
+use DVE\CEXApiClient\Definition\Request\OrderBookRequest;
 use DVE\CEXApiClient\Definition\Request\RequestInterface;
 use DVE\CEXApiClient\Definition\Request\Traits\SignatureTrait;
 use DVE\CEXApiClient\Definition\Response\BalanceResponse;
+use DVE\CEXApiClient\Definition\Response\OrderBookResponse;
 use DVE\CEXApiClient\Definition\Response\Property\BalanceCurrencyProperty;
+use DVE\CEXApiClient\Definition\Response\Property\OrderBookBidAskProperty;
 use Shudrum\Component\ArrayFinder\ArrayFinder;
 
 class Client
@@ -63,6 +66,44 @@ class Client
             ->setZEC((new BalanceCurrencyProperty())->setAvailable($data->get('ZEC.available'))->setOrders($data->get('ZEC.orders')))
             ->setXRP((new BalanceCurrencyProperty())->setAvailable($data->get('XRP.available'))->setOrders($data->get('XRP.orders')))
         ;
+
+        return $response;
+    }
+
+    public function orderBook(string $symbol1, string $symbol2, ?int $depth = null)
+    {
+        $orderBook = (new OrderBookRequest())
+            ->setSymbol1($symbol1)
+            ->setSymbol2($symbol2)
+            ->setDepth($depth)
+        ;
+        $data = $this->request($orderBook);
+
+        $response = (new OrderBookResponse())
+            ->setTimestamp((int)$data->get('timestamp'))
+            ->setId((int)$data->get('id'))
+            ->setPair((string)$data->get('pair'))
+            ->setSellTotal((float)$data->get('sell_total'))
+            ->setBuyTotal((float)$data->get('buy_total'))
+        ;
+
+        $asks = [];
+        foreach($data->get('asks') as $askData) {
+            $asks[] = (new OrderBookBidAskProperty())
+                ->setAmount($askData[1])
+                ->setRate($askData[0])
+            ;
+        }
+        $response->setAsks($asks);
+
+        $bids = [];
+        foreach($data->get('bids') as $bidsData) {
+            $bids[] = (new OrderBookBidAskProperty())
+                ->setAmount($bidsData[1])
+                ->setRate($bidsData[0])
+            ;
+        }
+        $response->setBids($bids);
 
         return $response;
     }
