@@ -1,1 +1,2 @@
-# cex.io-php
+# CEX.IO API php client
+

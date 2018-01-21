@@ -1,0 +1,24 @@
+{
+    "name": "dve/cex.io-php",
+    "description": "A simple cex.io API php client",
+    "type": "library",
+    "require": {
+        "guzzlehttp/guzzle": "^6.3",
+        "shudrum/array-finder": "^1.1"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^6.5"
+    },
+    "license": "Apache 2.0",
+    "authors": [
+        {
+            "name": "David Vander Elst",
+            "email": "vanderelst.david@gmail.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "DVE\\CEXApiClient\\": "src/"
+        }
+    }
+}
