@@ -91,17 +91,23 @@ class Client
             ;
         }
 
-        $params = $request->toArray();
-
         $options = [];
 
-        if(count($params) > 0) {
-            $options['form_params'] = $params;
+        // BODY params
+        $bodyParams = $request->getBodyParams();
+        if(count($bodyParams) > 0) {
+            $options['form_params'] = $bodyParams;
+        }
+
+        // Query params
+        $queryParams = '?';
+        foreach($request->getQueryParams() as $queryParamName => $queryParamValue) {
+            $queryParams .= $queryParamName . '=' . $queryParamValue . '&';
         }
 
         $guzzleResponse = $this->guzzleClient->request(
             $request->getMethod(),
-            $this->config->getApiUrl() . $request->getUri() . '/',
+            $this->config->getApiUrl() . $request->getUri() . '/' . $queryParams,
             $options
         );
 

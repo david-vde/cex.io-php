@@ -8,7 +8,10 @@ abstract class PrivateRequestAbstract implements RequestInterface
 {
     use SignatureTrait;
 
-    public function toArray(): array
+    /**
+     * @return array
+     */
+    public function getBodyParams(): array
     {
         return [
             'key'       =>  $this->getKey(),
@@ -17,6 +20,17 @@ abstract class PrivateRequestAbstract implements RequestInterface
         ];
     }
 
+    /**
+     * @return array
+     */
+    public function getQueryParams(): array
+    {
+        return [];
+    }
+
+    /**
+     * @return bool
+     */
     public function isPrivate(): bool
     {
         return true;
