@@ -2,6 +2,7 @@
 
 namespace DVE\CEXApiClient;
 
+use DVE\CEXApiClient\ClientTool\ClientToolFactory;
 use DVE\CEXApiClient\Definition\Request\BalanceRequest;
 use DVE\CEXApiClient\Definition\Request\OrderBookRequest;
 use DVE\CEXApiClient\Definition\Request\RequestInterface;
@@ -25,6 +26,11 @@ class Client
     private $requestSigner;
 
     /**
+     * @var ClientToolFactory
+     */
+    public $tools;
+
+    /**
      * @var \GuzzleHttp\Client
      */
     private $guzzleClient;
@@ -33,12 +39,16 @@ class Client
      * Client constructor.
      * @param Config $config
      * @param RequestSigner $requestSigner
+     * @param ClientToolFactory $clientToolFactory
      * @param \GuzzleHttp\Client $guzzleClient
      */
-    public function __construct(Config $config, RequestSigner $requestSigner, \GuzzleHttp\Client $guzzleClient)
+    public function __construct(Config $config, RequestSigner $requestSigner, ClientToolFactory $clientToolFactory, \GuzzleHttp\Client $guzzleClient)
     {
+        $clientToolFactory->setClient($this);
+
         $this->config = $config;
         $this->requestSigner = $requestSigner;
+        $this->tools = $clientToolFactory;
         $this->guzzleClient = $guzzleClient;
     }
 
