@@ -53,6 +53,19 @@ class Client
     }
 
     /**
+     * Create a new client object
+     *
+     * @param Config $config
+     * @return Client
+     */
+    public static function create(Config $config)
+    {
+        $requestSigner = new RequestSigner();
+        $guzzle = new \GuzzleHttp\Client();
+        return new Client($config, $requestSigner, new ClientToolFactory(), $guzzle);
+    }
+
+    /**
      * @return BalanceResponse
      */
     public function balance()
