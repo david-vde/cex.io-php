@@ -2,7 +2,6 @@
 
 namespace DVE\CEXApiClient\ClientTool;
 
-use DVE\CEXApiClient\Client;
 use DVE\CEXApiClient\ConstantHelper\SupportedCurrency;
 
 class BalanceClientTool extends ClientToolAbstract
@@ -26,6 +25,9 @@ class BalanceClientTool extends ClientToolAbstract
         }
 
         $balance = $this->client->balance();
+
+        $getter = 'get'.$totalCurrency;
+        $totalBalance += $balance->$getter()->getAvailable() + $balance->$getter()->getOrders();
 
         foreach(SupportedCurrency::getSupportedCurrencyPairs() as $currencyPair) {
             $baseCurrency = $currencyPair[0];
