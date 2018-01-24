@@ -3,14 +3,20 @@
 namespace DVE\CEXApiClient;
 
 use DVE\CEXApiClient\ClientTool\ClientToolFactory;
+use DVE\CEXApiClient\ConstantHelper\OrderType;
 use DVE\CEXApiClient\Definition\Request\BalanceRequest;
 use DVE\CEXApiClient\Definition\Request\OrderBookRequest;
+use DVE\CEXApiClient\Definition\Request\PlaceLimitOrderRequest;
+use DVE\CEXApiClient\Definition\Request\PlaceMarketOrderRequest;
 use DVE\CEXApiClient\Definition\Request\RequestInterface;
 use DVE\CEXApiClient\Definition\Request\Traits\SignatureTrait;
 use DVE\CEXApiClient\Definition\Response\BalanceResponse;
 use DVE\CEXApiClient\Definition\Response\OrderBookResponse;
+use DVE\CEXApiClient\Definition\Response\PlaceLimitOrderResponse;
+use DVE\CEXApiClient\Definition\Response\PlaceMarketOrderResponse;
 use DVE\CEXApiClient\Definition\Response\Property\BalanceCurrencyProperty;
 use DVE\CEXApiClient\Definition\Response\Property\OrderBookBidAskProperty;
+use DVE\CEXApiClient\Exception\CexAPiClientResponseException;
 use Shudrum\Component\ArrayFinder\ArrayFinder;
 
 class Client
@@ -93,6 +99,12 @@ class Client
         return $response;
     }
 
+    /**
+     * @param string $symbol1
+     * @param string $symbol2
+     * @param int|null $depth
+     * @return OrderBookResponse
+     */
     public function orderBook(string $symbol1, string $symbol2, ?int $depth = null)
     {
         $orderBook = (new OrderBookRequest())
@@ -132,8 +144,118 @@ class Client
     }
 
     /**
+     * @param string $symbol1
+     * @param string $symbol2
+     * @param float $amount
+     * @param float $price
+     * @return PlaceLimitOrderResponse
+     */
+    public function placeBuyLimitOrder(string $symbol1, string $symbol2, float $amount, float $price)
+    {
+        return $this->placeLimitOrder(OrderType::BUY, $symbol1, $symbol2, $amount, $price);
+    }
+
+    /**
+     * @param string $symbol1
+     * @param string $symbol2
+     * @param float $amount
+     * @param float $price
+     * @return PlaceLimitOrderResponse
+     */
+    public function placeSellLimitOrder(string $symbol1, string $symbol2, float $amount, float $price)
+    {
+        return $this->placeLimitOrder(OrderType::SELL, $symbol1, $symbol2, $amount, $price);
+    }
+
+    /**
+     * @param string $type
+     * @param string $symbol1
+     * @param string $symbol2
+     * @param float $amount
+     * @param float $price
+     * @return PlaceLimitOrderResponse
+     */
+    public function placeLimitOrder(string $type, string $symbol1, string $symbol2, float $amount, float $price)
+    {
+        $placeOrder = (new PlaceLimitOrderRequest())
+            ->setPrice($price)
+            ->setType($type)
+            ->setAmount($amount)
+            ->setSymbol1($symbol1)
+            ->setSymbol2($symbol2)
+        ;
+
+        $data = $this->request($placeOrder);
+
+        $response = (new PlaceLimitOrderResponse())
+            ->setComplete((bool)$data->get('complete'))
+            ->setAmount((float)$data->get('amount'))
+            ->setPrice((float)$data->get('price'))
+            ->setPending((float)$data->get('pending'))
+            ->setId((int)$data->get('id'))
+            ->setTime((float)($data->get('time')/1000))
+            ->setType((string)$data->get('type'))
+        ;
+
+        return $response;
+    }
+
+    /**
+     * @param string $symbol1
+     * @param string $symbol2
+     * @param float $amount
+     * @return PlaceMarketOrderResponse
+     */
+    public function placeBuyMarketOrder(string $symbol1, string $symbol2, float $amount)
+    {
+        return $this->placeMarketOrder(OrderType::BUY, $symbol1, $symbol2, $amount);
+    }
+
+    /**
+     * @param string $symbol1
+     * @param string $symbol2
+     * @param float $amount
+     * @return PlaceMarketOrderResponse
+     */
+    public function placeSellMarketOrder(string $symbol1, string $symbol2, float $amount)
+    {
+        return $this->placeMarketOrder(OrderType::SELL, $symbol1, $symbol2, $amount);
+    }
+
+    /**
+     * @param string $type
+     * @param string $symbol1
+     * @param string $symbol2
+     * @param float $amount
+     * @return PlaceMarketOrderResponse
+     */
+    public function placeMarketOrder(string $type, string $symbol1, string $symbol2, float $amount)
+    {
+        $placeOrder = (new PlaceMarketOrderRequest())
+            ->setType($type)
+            ->setAmount($amount)
+            ->setSymbol1($symbol1)
+            ->setSymbol2($symbol2)
+        ;
+
+        $data = $this->request($placeOrder);
+
+        $response = (new PlaceMarketOrderResponse())
+            ->setSymbol1amount((float)$data->get('symbol1Amount'))
+            ->setSymbol2amount((float)$data->get('symbol2Amount'))
+            ->setMessage((string)$data->get('message'))
+            ->setId((int)$data->get('id'))
+            ->setTime((float)($data->get('time')/1000))
+            ->setType((string)$data->get('type'))
+        ;
+
+        return $response;
+    }
+
+    /**
      * @param RequestInterface $request
      * @return ArrayFinder
+     * @throws CexAPiClientResponseException
      */
     private function request(RequestInterface $request): ArrayFinder
     {
@@ -176,6 +298,10 @@ class Client
         );
 
         $data = json_decode((string)$guzzleResponse->getBody(), true);
+
+        if(array_key_exists('error', $data)) {
+            throw new CexAPiClientResponseException($guzzleResponse);
+        }
 
         return new ArrayFinder($data);
     }
