@@ -9,7 +9,7 @@ class BalanceClientTool extends ClientToolAbstract
     const ESTIMATED_GLOBAL_BALANCE_RATE_MODE_AVERAGE = 'egb-avg-rate-mode';
     const ESTIMATED_GLOBAL_BALANCE_RATE_MODE_NEAREST_ASK = 'egb-ask-rate-mode';
     const ESTIMATED_GLOBAL_BALANCE_RATE_MODE_NEAREST_BID = 'egb-bid-rate-mode';
-    const ESTIMATED_GLOBAL_BALANCE_RATE_MODE_LAST_ORDER = 'egb-lorder-rate-mode';
+    const ESTIMATED_GLOBAL_BALANCE_RATE_MODE_LAST_PRICE = 'egb-lprice-rate-mode';
 
     /**
      * @param string $totalCurrency Method only available for EUR or USD
@@ -38,10 +38,9 @@ class BalanceClientTool extends ClientToolAbstract
                 $curBalance = $balance->$getter()->getAvailable() + $balance->$getter()->getOrders();
 
                 if($curBalance != 0) {
-                    $baseCurrencyOrderBook = $this->client->orderBook($baseCurrency, $quoteCurrency, 1);
-
                     switch($rateMode) {
                         case self::ESTIMATED_GLOBAL_BALANCE_RATE_MODE_AVERAGE:
+                            $baseCurrencyOrderBook = $this->client->orderBook($baseCurrency, $quoteCurrency, 1);
                             $rate = (
                                 $baseCurrencyOrderBook->getAsks()[0]->getRate() +
                                 $baseCurrencyOrderBook->getBids()[0]->getRate()
@@ -49,15 +48,18 @@ class BalanceClientTool extends ClientToolAbstract
                             break;
 
                         case self::ESTIMATED_GLOBAL_BALANCE_RATE_MODE_NEAREST_ASK:
+                            $baseCurrencyOrderBook = $this->client->orderBook($baseCurrency, $quoteCurrency, 1);
                             $rate = $baseCurrencyOrderBook->getAsks()[0]->getRate();
                             break;
 
                         case self::ESTIMATED_GLOBAL_BALANCE_RATE_MODE_NEAREST_BID:
+                            $baseCurrencyOrderBook = $this->client->orderBook($baseCurrency, $quoteCurrency, 1);
                             $rate = $baseCurrencyOrderBook->getBids()[0]->getRate();
                             break;
 
-                        case self::ESTIMATED_GLOBAL_BALANCE_RATE_MODE_LAST_ORDER;
-                            throw new \InvalidArgumentException('Rate mode not yet implemented.');
+                        case self::ESTIMATED_GLOBAL_BALANCE_RATE_MODE_LAST_PRICE;
+                            $baseCurrencyLastPrice = $this->client->lastPrice($baseCurrency, $quoteCurrency);
+                            $rate = $baseCurrencyLastPrice->getLprice();
                             break;
 
                         default:
