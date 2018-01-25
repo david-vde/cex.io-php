@@ -5,12 +5,14 @@ namespace DVE\CEXApiClient;
 use DVE\CEXApiClient\ClientTool\ClientToolFactory;
 use DVE\CEXApiClient\ConstantHelper\OrderType;
 use DVE\CEXApiClient\Definition\Request\BalanceRequest;
+use DVE\CEXApiClient\Definition\Request\LastPriceRequest;
 use DVE\CEXApiClient\Definition\Request\OrderBookRequest;
 use DVE\CEXApiClient\Definition\Request\PlaceLimitOrderRequest;
 use DVE\CEXApiClient\Definition\Request\PlaceMarketOrderRequest;
 use DVE\CEXApiClient\Definition\Request\RequestInterface;
 use DVE\CEXApiClient\Definition\Request\Traits\SignatureTrait;
 use DVE\CEXApiClient\Definition\Response\BalanceResponse;
+use DVE\CEXApiClient\Definition\Response\LastPriceResponse;
 use DVE\CEXApiClient\Definition\Response\OrderBookResponse;
 use DVE\CEXApiClient\Definition\Response\PlaceLimitOrderResponse;
 use DVE\CEXApiClient\Definition\Response\PlaceMarketOrderResponse;
@@ -247,6 +249,29 @@ class Client
             ->setId((int)$data->get('id'))
             ->setTime((float)($data->get('time')/1000))
             ->setType((string)$data->get('type'))
+        ;
+
+        return $response;
+    }
+
+    /**
+     * @param $symbol1
+     * @param $symbol2
+     * @return LastPriceResponse
+     */
+    public function lastPrice($symbol1, $symbol2): LastPriceResponse
+    {
+        $lastPrice = (new LastPriceRequest())
+            ->setSymbol1($symbol1)
+            ->setSymbol2($symbol2)
+        ;
+
+        $data = $this->request($lastPrice);
+
+        $response = (new LastPriceResponse())
+            ->setCurr1((string)$data->get('curr1'))
+            ->setCurr2((string)$data->get('curr2'))
+            ->setLprice((float)$data->get('lprice'))
         ;
 
         return $response;

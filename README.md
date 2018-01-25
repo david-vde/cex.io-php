@@ -32,6 +32,14 @@ foreach($orderBook->getAsks() as $ask) {
 
 ```
 
+## Get Last Price
+
+
+```
+$response = $client->lastPrice('BTC', 'EUR');
+echo 'The last price for BTC/EUR pair is ' . $response->getLprice() . ' EUR'."\n";
+```
+
 ## Get Account Balance
 
 ```
