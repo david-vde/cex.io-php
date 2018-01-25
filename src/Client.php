@@ -66,7 +66,7 @@ class Client
      * @param Config $config
      * @return Client
      */
-    public static function create(Config $config)
+    public static function create(Config $config): Client
     {
         $requestSigner = new RequestSigner();
         $guzzle = new \GuzzleHttp\Client();
@@ -76,7 +76,7 @@ class Client
     /**
      * @return BalanceResponse
      */
-    public function balance()
+    public function balance(): BalanceResponse
     {
         $balance = new BalanceRequest();
         $data = $this->request($balance);
@@ -107,7 +107,7 @@ class Client
      * @param int|null $depth
      * @return OrderBookResponse
      */
-    public function orderBook(string $symbol1, string $symbol2, ?int $depth = null)
+    public function orderBook(string $symbol1, string $symbol2, ?int $depth = null): OrderBookResponse
     {
         $orderBook = (new OrderBookRequest())
             ->setSymbol1($symbol1)
@@ -152,7 +152,7 @@ class Client
      * @param float $price
      * @return PlaceLimitOrderResponse
      */
-    public function placeBuyLimitOrder(string $symbol1, string $symbol2, float $amount, float $price)
+    public function placeBuyLimitOrder(string $symbol1, string $symbol2, float $amount, float $price): PlaceLimitOrderResponse
     {
         return $this->placeLimitOrder(OrderType::BUY, $symbol1, $symbol2, $amount, $price);
     }
@@ -164,7 +164,7 @@ class Client
      * @param float $price
      * @return PlaceLimitOrderResponse
      */
-    public function placeSellLimitOrder(string $symbol1, string $symbol2, float $amount, float $price)
+    public function placeSellLimitOrder(string $symbol1, string $symbol2, float $amount, float $price): PlaceLimitOrderResponse
     {
         return $this->placeLimitOrder(OrderType::SELL, $symbol1, $symbol2, $amount, $price);
     }
@@ -177,7 +177,7 @@ class Client
      * @param float $price
      * @return PlaceLimitOrderResponse
      */
-    public function placeLimitOrder(string $type, string $symbol1, string $symbol2, float $amount, float $price)
+    public function placeLimitOrder(string $type, string $symbol1, string $symbol2, float $amount, float $price): PlaceLimitOrderResponse
     {
         $placeOrder = (new PlaceLimitOrderRequest())
             ->setPrice($price)
@@ -208,7 +208,7 @@ class Client
      * @param float $amount
      * @return PlaceMarketOrderResponse
      */
-    public function placeBuyMarketOrder(string $symbol1, string $symbol2, float $amount)
+    public function placeBuyMarketOrder(string $symbol1, string $symbol2, float $amount): PlaceMarketOrderResponse
     {
         return $this->placeMarketOrder(OrderType::BUY, $symbol1, $symbol2, $amount);
     }
@@ -219,7 +219,7 @@ class Client
      * @param float $amount
      * @return PlaceMarketOrderResponse
      */
-    public function placeSellMarketOrder(string $symbol1, string $symbol2, float $amount)
+    public function placeSellMarketOrder(string $symbol1, string $symbol2, float $amount): PlaceMarketOrderResponse
     {
         return $this->placeMarketOrder(OrderType::SELL, $symbol1, $symbol2, $amount);
     }
@@ -231,7 +231,7 @@ class Client
      * @param float $amount
      * @return PlaceMarketOrderResponse
      */
-    public function placeMarketOrder(string $type, string $symbol1, string $symbol2, float $amount)
+    public function placeMarketOrder(string $type, string $symbol1, string $symbol2, float $amount): PlaceMarketOrderResponse
     {
         $placeOrder = (new PlaceMarketOrderRequest())
             ->setType($type)
