@@ -8,10 +8,10 @@ class RequestSigner
      * @param string $userID
      * @param string $apiKey
      * @param string $apiSecret
-     * @param int $nonce
+     * @param string $nonce
      * @return string
      */
-    public function generate(string $userID, string $apiKey, string $apiSecret, int $nonce): string
+    public function generate(string $userID, string $apiKey, string $apiSecret, string $nonce): string
     {
         return strtoupper(hash_hmac('sha256', $nonce.$userID.$apiKey, $apiSecret));
     }

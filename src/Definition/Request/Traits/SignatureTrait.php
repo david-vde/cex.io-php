@@ -18,7 +18,7 @@ trait SignatureTrait
     private $signature;
 
     /**
-     * @var int
+     * @var string
      */
     private $nonce;
 
@@ -59,18 +59,18 @@ trait SignatureTrait
     }
 
     /**
-     * @return int
+     * @return string
      */
-    public function getNonce(): int
+    public function getNonce(): string
     {
         return $this->nonce;
     }
 
     /**
-     * @param int $nonce
+     * @param string $nonce
      * @return PrivateRequestAbstract
      */
-    public function setNonce(int $nonce): PrivateRequestAbstract
+    public function setNonce(string $nonce): PrivateRequestAbstract
     {
         $this->nonce = $nonce;
         return $this;

@@ -34,6 +34,11 @@ class Client
     private $requestSigner;
 
     /**
+     * @var NonceNumberGenerator
+     */
+    private $nonceNumberGenerator;
+
+    /**
      * @var ClientToolFactory
      */
     public $tools;
@@ -47,15 +52,17 @@ class Client
      * Client constructor.
      * @param Config $config
      * @param RequestSigner $requestSigner
+     * @param NonceNumberGenerator $nonceNumberGenerator
      * @param ClientToolFactory $clientToolFactory
      * @param \GuzzleHttp\Client $guzzleClient
      */
-    public function __construct(Config $config, RequestSigner $requestSigner, ClientToolFactory $clientToolFactory, \GuzzleHttp\Client $guzzleClient)
+    public function __construct(Config $config, RequestSigner $requestSigner, NonceNumberGenerator $nonceNumberGenerator, ClientToolFactory $clientToolFactory, \GuzzleHttp\Client $guzzleClient)
     {
         $clientToolFactory->setClient($this);
 
         $this->config = $config;
         $this->requestSigner = $requestSigner;
+        $this->nonceNumberGenerator = $nonceNumberGenerator;
         $this->tools = $clientToolFactory;
         $this->guzzleClient = $guzzleClient;
     }
@@ -69,8 +76,9 @@ class Client
     public static function create(Config $config): Client
     {
         $requestSigner = new RequestSigner();
+        $nonceGenerator = new NonceNumberGenerator();
         $guzzle = new \GuzzleHttp\Client();
-        return new Client($config, $requestSigner, new ClientToolFactory(), $guzzle);
+        return new Client($config, $requestSigner, $nonceGenerator, new ClientToolFactory(), $guzzle);
     }
 
     /**
@@ -285,14 +293,14 @@ class Client
     private function request(RequestInterface $request): ArrayFinder
     {
         if($request->isPrivate()) {
-            $nonce = (int)(microtime(true) * 10000);
+            $nonce = $this->nonceNumberGenerator->generate();
+
             $signature = $this->requestSigner->generate(
                 $this->config->getApiUserID(),
                 $this->config->getApiKey(),
                 $this->config->getApiSecret(),
                 $nonce
             );
-
 
             /** @var $request SignatureTrait */
             $request
