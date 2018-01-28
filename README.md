@@ -2,6 +2,16 @@
 
 This is a non-official PHP client for the CEX.io market place API.
 
+## Read first
+
+CEX.io use a **nonce** number to sign the private requests. The nonce cannot be the same or smaller than the previous one.
+
+To make the job easy with this client, the requests are signed automatically when required. The current timestamp with microseconds is used as **nonce**.
+
+If you have previously used your **API key** with different scripts before, be sure that the generated nonce will not be smaller than the last one used.
+ 
+If you are not sure, please generate a new API key on CEX.io to avoid ***"invalid request"** issues.  
+
 ## Create client
 
 ```
