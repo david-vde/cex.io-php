@@ -17,6 +17,10 @@ class CexApiClientResponseException extends \Exception
      */
     private $response;
 
+    /**
+     * CexApiClientResponseException constructor.
+     * @param ResponseInterface $response
+     */
     public function __construct(ResponseInterface $response)
     {
         $this->response = $response;

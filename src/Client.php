@@ -377,7 +377,7 @@ class Client
 
         $data = json_decode((string)$guzzleResponse->getBody(), true);
 
-        if(array_key_exists('error', $data)) {
+        if(is_null($data) || array_key_exists('error', $data)) {
             throw new CexApiClientResponseException($guzzleResponse);
         }
 
