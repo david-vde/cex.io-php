@@ -5,7 +5,7 @@ namespace DVE\CEXApiClient\Exception;
 use Psr\Http\Message\ResponseInterface;
 use Shudrum\Component\ArrayFinder\ArrayFinder;
 
-class CexAPiClientResponseException extends \Exception
+class CexApiClientResponseException extends \Exception
 {
     /**
      * @var ArrayFinder

@@ -20,7 +20,7 @@ use DVE\CEXApiClient\Definition\Response\PlaceLimitOrderResponse;
 use DVE\CEXApiClient\Definition\Response\PlaceMarketOrderResponse;
 use DVE\CEXApiClient\Definition\Response\Property\BalanceCurrencyProperty;
 use DVE\CEXApiClient\Definition\Response\Property\OrderBookBidAskProperty;
-use DVE\CEXApiClient\Exception\CexAPiClientResponseException;
+use DVE\CEXApiClient\Exception\CexApiClientResponseException;
 use Shudrum\Component\ArrayFinder\ArrayFinder;
 
 class Client
@@ -333,7 +333,7 @@ class Client
     /**
      * @param RequestInterface $request
      * @return ArrayFinder
-     * @throws CexAPiClientResponseException
+     * @throws CexApiClientResponseException
      */
     private function request(RequestInterface $request): ArrayFinder
     {
@@ -378,7 +378,7 @@ class Client
         $data = json_decode((string)$guzzleResponse->getBody(), true);
 
         if(array_key_exists('error', $data)) {
-            throw new CexAPiClientResponseException($guzzleResponse);
+            throw new CexApiClientResponseException($guzzleResponse);
         }
 
         return new ArrayFinder($data);
