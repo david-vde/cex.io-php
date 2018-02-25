@@ -308,7 +308,7 @@ class Client
             ->setStatus($data->get('status'))
             ->setLastTx($data->get('lastTx'))
             ->setType($data->get('type'))
-            ->setTime($data->get('time'))
+            ->setTime($this->getDateTimeFromMicroTime($data->get('time') / 10000))
             ->setAmount((float)$data->get('amount'))
             ->setPrice((float)$data->get('price'))
             ->setRemains((float)$data->get('price'))

@@ -20,7 +20,7 @@ class OrderDetailsResponse implements ResponseInterface
     private $type;
 
     /**
-     * @var string
+     * @var \DateTime
      */
     private $time;
 
@@ -121,30 +121,30 @@ class OrderDetailsResponse implements ResponseInterface
     }
 
     /**
+     * @return \DateTime
+     */
+    public function getTime(): \DateTime
+    {
+        return $this->time;
+    }
+
+    /**
+     * @param \DateTime $time
+     * @return OrderDetailsResponse
+     */
+    public function setTime(\DateTime $time): OrderDetailsResponse
+    {
+        $this->time = $time;
+        return $this;
+    }
+
+    /**
      * @param string $type
      * @return OrderDetailsResponse
      */
     public function setType(string $type): OrderDetailsResponse
     {
         $this->type = $type;
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getTime(): string
-    {
-        return $this->time;
-    }
-
-    /**
-     * @param string $time
-     * @return OrderDetailsResponse
-     */
-    public function setTime(string $time): OrderDetailsResponse
-    {
-        $this->time = $time;
         return $this;
     }
 
