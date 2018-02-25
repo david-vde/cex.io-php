@@ -311,7 +311,7 @@ class Client
             ->setTime($this->getDateTimeFromMicroTime($data->get('time') / 10000))
             ->setAmount((float)$data->get('amount'))
             ->setPrice((float)$data->get('price'))
-            ->setRemains((float)$data->get('price'))
+            ->setRemains((float)$data->get('remains'))
             ->setPos($data->get('pos'))
             ->setTradingFeeMaker((float)$data->get('tradingFeeMaker'))
             ->setTradingFeeTaker((float)$data->get('tradingFeeTaker'))
