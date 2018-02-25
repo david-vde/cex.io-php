@@ -7,6 +7,7 @@ use DVE\CEXApiClient\ConstantHelper\OrderType;
 use DVE\CEXApiClient\Definition\Request\BalanceRequest;
 use DVE\CEXApiClient\Definition\Request\LastPriceRequest;
 use DVE\CEXApiClient\Definition\Request\OrderBookRequest;
+use DVE\CEXApiClient\Definition\Request\OrderDetailsRequest;
 use DVE\CEXApiClient\Definition\Request\PlaceLimitOrderRequest;
 use DVE\CEXApiClient\Definition\Request\PlaceMarketOrderRequest;
 use DVE\CEXApiClient\Definition\Request\RequestInterface;
@@ -14,6 +15,7 @@ use DVE\CEXApiClient\Definition\Request\Traits\SignatureTrait;
 use DVE\CEXApiClient\Definition\Response\BalanceResponse;
 use DVE\CEXApiClient\Definition\Response\LastPriceResponse;
 use DVE\CEXApiClient\Definition\Response\OrderBookResponse;
+use DVE\CEXApiClient\Definition\Response\OrderDetailsResponse;
 use DVE\CEXApiClient\Definition\Response\PlaceLimitOrderResponse;
 use DVE\CEXApiClient\Definition\Response\PlaceMarketOrderResponse;
 use DVE\CEXApiClient\Definition\Response\Property\BalanceCurrencyProperty;
@@ -286,6 +288,49 @@ class Client
     }
 
     /**
+     * @param string $orderId
+     * @return OrderDetailsResponse
+     */
+    public function getOrderDetails(string $orderId): OrderDetailsResponse
+    {
+        $orderDetails = (new OrderDetailsRequest())
+            ->setId($orderId)
+        ;
+
+        $data = $this->request($orderDetails);
+
+        $response = (new OrderDetailsResponse())
+            ->setId($data->get('id'))
+            ->setOrderId($data->get('orderId'))
+            ->setUser($data->get('user'))
+            ->setSymbol1($data->get('symbol1'))
+            ->setSymbol2($data->get('symbol2'))
+            ->setStatus($data->get('status'))
+            ->setLastTx($data->get('lastTx'))
+            ->setType($data->get('type'))
+            ->setTime($data->get('time'))
+            ->setAmount((float)$data->get('amount'))
+            ->setPrice((float)$data->get('price'))
+            ->setRemains((float)$data->get('price'))
+            ->setPos($data->get('pos'))
+            ->setTradingFeeMaker((float)$data->get('tradingFeeMaker'))
+            ->setTradingFeeTaker((float)$data->get('tradingFeeTaker'))
+            ->setTradingFeeStrategy($data->get('tradingFeeStrategy'))
+            ->setTradingFeeUserVolumeAmount($data->get('tradingFeeUserVolumeAmount'))
+        ;
+
+        // Handle lastTxTime both formats
+        $lastTxTime = $data->get('lastTxTime');
+        if(is_numeric($lastTxTime)) {
+            $response->setLastTxTime($this->getDateTimeFromMicroTime($lastTxTime / 10000));
+        } else {
+            $response->setLastTxTime(new \DateTime($lastTxTime));
+        }
+
+        return $response;
+    }
+
+    /**
      * @param RequestInterface $request
      * @return ArrayFinder
      * @throws CexAPiClientResponseException
@@ -337,5 +382,14 @@ class Client
         }
 
         return new ArrayFinder($data);
+    }
+
+    /**
+     * @param float $microtime
+     * @return \DateTime
+     */
+    protected function getDateTimeFromMicroTime(float $microtime): \DateTime
+    {
+        return \DateTime::createFromFormat('U.u', $microtime);
     }
 }
